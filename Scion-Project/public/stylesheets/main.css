@@ -33,7 +33,7 @@ input[type=email], select {
 
 input[type=submit] {
   width: 100%;
-  background-color: #4CAF50;
+  background-color: rgb(30, 164, 216);
   color: white;
   padding: 14px 20px;
   margin: 8px 0;
@@ -43,16 +43,16 @@ input[type=submit] {
 }
 
 input[type=submit]:hover {
-  background-color: #45a049;
+  background-color: #157297;
 }
 
 .landing-page {
-    background-image: url("../images/2.jpg");
-    background-position: center center;
-    background-size=cover;
+    background-image: url("../images/Bckgrnd_img.jpg");
+    background-position: bottom center;
+    background-size= fixed;
     background-repeat: no-repeat;
     background-attachment: fixed;
-    background-color: black;
+    background-color: #e6e6e6;
 }
 
 #right {
@@ -63,7 +63,7 @@ input[type=submit]:hover {
 
 #left {
     position: fixed;
-    bottom: 30%;
+    bottom: 45%;
     left: 5%;
 }
 
@@ -74,6 +74,6 @@ body{
 
 #right-signup {
     position: fixed;
-    bottom: 15%;
+    bottom: 20%;
     right: 10%;
 }
