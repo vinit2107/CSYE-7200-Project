@@ -3,46 +3,63 @@ package controllers
 import javax.inject._
 import play.api.mvc._
 import login.UserDAO
+import play.api.data._
+import play.api.data.Forms._
 
-/**
- * This controller creates an `Action` to handle HTTP requests to the
- * application's home page.
- */
+// Case class to validate login form
+case class LoginForm(username: String, password: String)
+
+// Case class to validate sign-up form
+case class SignUpForm(name: String, email: String, city: String, username: String, password: String)
+
 @Singleton
-class HomeController @Inject()(val controllerComponents: ControllerComponents) extends BaseController {
+class HomeController @Inject()(val cc: MessagesControllerComponents) extends MessagesAbstractController(cc) {
 
-  /**
-   * Create an Action to render an HTML page.
-   *
-   * The configuration in the `routes` file means that this method
-   * will be called when the application receives a `GET` request with
-   * a path of `/`.
-   */
+  val loginData = Form(mapping(
+    "Username" -> nonEmptyText,
+    "Password" -> nonEmptyText
+  )(LoginForm.apply)(LoginForm.unapply))
+
+  val signupData = Form(mapping(
+    "Name" -> nonEmptyText,
+    "Email" -> email,
+    "City" -> nonEmptyText,
+    "Username" -> nonEmptyText,
+    "Password" -> nonEmptyText
+  )(SignUpForm.apply)(SignUpForm.unapply))
+
   def index() = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index())
   }
 
   def login() = Action {implicit  request =>
-    Ok(views.html.credentials.login())
+    Ok(views.html.credentials.login(loginData))
   }
 
-  def signin() = Action {implicit request =>
-    val data = request.body.asFormUrlEncoded
-    data.map { args =>
-      val username = args.get("uname").get.head
-      val password = args.get("password").get.head
-      if(UserDAO.validateUser(username, password))
-        Ok(s"$username logged in using $password")
-      else
-        Redirect(routes.HomeController.login()).flashing("error" -> "**Invalid Username or Password")
-    }.getOrElse(Redirect(routes.HomeController.login()).flashing("error" -> "**Please complete all fields."))
-  }
-
-  def description() = Action { implicit request =>
-    Ok(views.html.credentials.description())
+  def validateLogin() = Action { implicit request =>
+    loginData.bindFromRequest.fold(
+      formWithError => BadRequest(views.html.credentials.login(formWithError)),
+      ld =>
+        if(UserDAO.validateUser(ld.username, ld.password))
+          Ok(s"$ld.username logged in using $ld.password")
+        else
+          Redirect(routes.HomeController.login()).flashing("error" -> "**Invalid Username or Password")
+        )
   }
 
   def signup() = Action { implicit request =>
-    Redirect(routes.HomeController.login())
+    Ok(views.html.credentials.signup(signupData))
   }
+
+  def validateSignUp() = Action {implicit request =>
+    signupData.bindFromRequest.fold(
+      formWithError => BadRequest(views.html.credentials.description(formWithError)),
+      sgd =>
+        if(UserDAO.addUser(sgd.username, sgd.password, sgd.name, sgd.email, sgd.city))
+          Redirect(routes.HomeController.login())
+        else
+          Redirect(routes.HomeController.signup()).flashing("error" -> "**UserName already exists")
+    )
+  }
+
 }

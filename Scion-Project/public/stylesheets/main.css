@@ -32,7 +32,7 @@ input[type=email], select {
 }
 
 input[type=submit] {
-  width: 100%;
+  width: 84%;
   background-color: rgb(30, 164, 216);
   color: white;
   padding: 14px 20px;
@@ -40,6 +40,7 @@ input[type=submit] {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  float: right;
 }
 
 input[type=submit]:hover {
@@ -74,6 +75,6 @@ body{
 
 #right-signup {
     position: fixed;
-    bottom: 20%;
+    bottom: 10%;
     right: 10%;
 }

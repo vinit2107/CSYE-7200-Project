@@ -1,6 +1,7 @@
 package login
 
 import scala.collection.mutable.Map
+import scala.util.Try
 
 case class User(username: String, password: String, name: String, email: String, city: String)
 
