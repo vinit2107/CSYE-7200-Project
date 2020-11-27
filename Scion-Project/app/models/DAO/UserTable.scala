@@ -26,7 +26,7 @@ trait UserTable {
   }
 
   /*Function to insert record in User table*/
-  def insert_user(user: User): Future[Int] ={
+  def insert_user(user: User): Future[Int] = {
     DbConfiguration.config.db.run(users += user)
   }
 }

@@ -1,13 +1,14 @@
 package controllers
 
 import javax.inject._
-import login.LoginHandler
+import models.login.LoginHandler
 import models.DAO.UserTable
 import play.api.data.Forms._
 import play.api.data._
 import play.api.mvc._
 
-import scala.util.{Failure, Success}
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 // Case class to validate login form
 case class LoginForm(username: String, password: String)
@@ -39,15 +40,15 @@ class HomeController @Inject()(val cc: MessagesControllerComponents) extends Mes
     Ok(views.html.credentials.login(loginData))
   }
 
-  def validateLogin(): Action[AnyContent] = Action { implicit request =>
+  def validateLogin(): Action[AnyContent] = Action.async { implicit request =>
     loginData.bindFromRequest.fold(
-      formWithError => BadRequest(views.html.credentials.login(formWithError)),
+      formWithError => Future(BadRequest(views.html.credentials.login(formWithError))),
       ld => {
          val handler = new LoginHandler() with UserTable
-         (handler.validateUser(ld.username, ld.password)) match {
-           case Success(_) => Redirect(routes.HomeController.action())
-           case Failure(e) => Redirect(routes.HomeController.login()).flashing("error" -> s"**$e.getMessage")
-      }
+         (handler.validateUser(ld.username, ld.password)).map(b => b match {
+           case true => Redirect(routes.HomeController.action())
+           case false => Redirect(routes.HomeController.login()).flashing("error" -> s"**Username or password is incorrect")
+      })
       })
   }
 
@@ -55,15 +56,15 @@ class HomeController @Inject()(val cc: MessagesControllerComponents) extends Mes
     Ok(views.html.credentials.signup(signupData))
   }
 
-  def validateSignUp(): Action[AnyContent] = Action { implicit request =>
+  def validateSignUp(): Action[AnyContent] = Action.async { implicit request =>
     signupData.bindFromRequest.fold(
-      formWithError => BadRequest(views.html.credentials.signup(formWithError)),
+      formWithError => Future(BadRequest(views.html.credentials.signup(formWithError))),
       sgd => {
         val handler = new LoginHandler() with UserTable
-        (handler.addUser(sgd.username, sgd.password, sgd.name, sgd.email, sgd.city)) match {
-          case Success(_) => Redirect(routes.HomeController.login())
-          case Failure(e) => Redirect(routes.HomeController.signup()).flashing("error" -> s"**${e.getMessage}")
-      }
+        (handler.addUser(sgd.username, sgd.password, sgd.name, sgd.email, sgd.city)).map(b => b match {
+          case true => Redirect(routes.HomeController.login())
+          case false => Redirect(routes.HomeController.signup()).flashing("error" -> s"**Username already exists")
+      })
   })
   }
 
