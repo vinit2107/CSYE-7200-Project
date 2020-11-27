@@ -1,10 +1,11 @@
 package controllers
 
 import javax.inject._
-import play.api.mvc._
-import login.UserDAO
-import play.api.data._
+import login.LoginHandler
+import models.DAO.UserTable
 import play.api.data.Forms._
+import play.api.data._
+import play.api.mvc._
 
 // Case class to validate login form
 case class LoginForm(username: String, password: String)
@@ -39,12 +40,13 @@ class HomeController @Inject()(val cc: MessagesControllerComponents) extends Mes
   def validateLogin() = Action { implicit request =>
     loginData.bindFromRequest.fold(
       formWithError => BadRequest(views.html.credentials.login(formWithError)),
-      ld =>
-        if(UserDAO.validateUser(ld.username, ld.password))
+      ld => {
+        val handler = new LoginHandler() with UserTable
+        if (handler.validateUser(ld.username, ld.password))
           Ok(s"$ld.username logged in using $ld.password")
         else
           Redirect(routes.HomeController.login()).flashing("error" -> "**Invalid Username or Password")
-        )
+      })
   }
 
   def signup() = Action { implicit request =>
@@ -53,13 +55,14 @@ class HomeController @Inject()(val cc: MessagesControllerComponents) extends Mes
 
   def validateSignUp() = Action {implicit request =>
     signupData.bindFromRequest.fold(
-      formWithError => BadRequest(views.html.credentials.description(formWithError)),
-      sgd =>
-        if(UserDAO.addUser(sgd.username, sgd.password, sgd.name, sgd.email, sgd.city))
+      formWithError => BadRequest(views.html.credentials.signup(formWithError)),
+      sgd => {
+        val handler = new LoginHandler() with UserTable
+        if (handler.addUser(sgd.username, sgd.password, sgd.name, sgd.email, sgd.city))
           Redirect(routes.HomeController.login())
         else
           Redirect(routes.HomeController.signup()).flashing("error" -> "**UserName already exists")
-    )
+      })
   }
 
 }
