@@ -7,6 +7,8 @@ import play.api.data.Forms._
 import play.api.data._
 import play.api.mvc._
 
+import scala.util.{Failure, Success}
+
 // Case class to validate login form
 case class LoginForm(username: String, password: String)
 
@@ -37,15 +39,15 @@ class HomeController @Inject()(val cc: MessagesControllerComponents) extends Mes
     Ok(views.html.credentials.login(loginData))
   }
 
-  def validateLogin() = Action { implicit request =>
+  def validateLogin(): Action[AnyContent] = Action { implicit request =>
     loginData.bindFromRequest.fold(
       formWithError => BadRequest(views.html.credentials.login(formWithError)),
       ld => {
-        val handler = new LoginHandler() with UserTable
-        if (handler.validateUser(ld.username, ld.password))
-          Ok(s"$ld.username logged in using $ld.password")
-        else
-          Redirect(routes.HomeController.login()).flashing("error" -> "**Invalid Username or Password")
+         val handler = new LoginHandler() with UserTable
+         (handler.validateUser(ld.username, ld.password)) match {
+           case Success(_) => Ok(s"$ld.username logged in using $ld.password")
+           case Failure(e) => Redirect(routes.HomeController.login()).flashing("error" -> s"**$e.getMessage")
+      }
       })
   }
 
@@ -58,11 +60,10 @@ class HomeController @Inject()(val cc: MessagesControllerComponents) extends Mes
       formWithError => BadRequest(views.html.credentials.signup(formWithError)),
       sgd => {
         val handler = new LoginHandler() with UserTable
-        if (handler.addUser(sgd.username, sgd.password, sgd.name, sgd.email, sgd.city))
-          Redirect(routes.HomeController.login())
-        else
-          Redirect(routes.HomeController.signup()).flashing("error" -> "**UserName already exists")
-      })
-  }
-
+        (handler.addUser(sgd.username, sgd.password, sgd.name, sgd.email, sgd.city)) match {
+          case Success(_) => Redirect(routes.HomeController.login())
+          case Failure(e) => Redirect(routes.HomeController.signup()).flashing("error" -> s"**${e.getMessage}")
+      }
+  })
+}
 }
