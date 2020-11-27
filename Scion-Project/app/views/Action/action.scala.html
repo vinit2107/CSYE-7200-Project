@@ -1,0 +1,12 @@
+@()(implicit flash: Flash)
+
+@main("Action") {
+    @defining(play.core.PlayVersion.current) { version =>
+        <body class="landing-page" style="text-align: center">
+            <div style="text-align: left">
+                <input id="button1" type="submit" value="Add/Remove Ticks"/>
+                <input id="button2" type="submit" value="Historical Data Transformation"/>
+            </div>
+        </body>
+    }
+}

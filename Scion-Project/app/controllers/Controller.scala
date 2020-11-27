@@ -31,11 +31,11 @@ class HomeController @Inject()(val cc: MessagesControllerComponents) extends Mes
     "Password" -> nonEmptyText
   )(SignUpForm.apply)(SignUpForm.unapply))
 
-  def index() = Action { implicit request: Request[AnyContent] =>
+  def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index())
   }
 
-  def login() = Action {implicit  request =>
+  def login(): Action[AnyContent] = Action { implicit request =>
     Ok(views.html.credentials.login(loginData))
   }
 
@@ -45,17 +45,17 @@ class HomeController @Inject()(val cc: MessagesControllerComponents) extends Mes
       ld => {
          val handler = new LoginHandler() with UserTable
          (handler.validateUser(ld.username, ld.password)) match {
-           case Success(_) => Ok(s"$ld.username logged in using $ld.password")
+           case Success(_) => Redirect(routes.HomeController.action())
            case Failure(e) => Redirect(routes.HomeController.login()).flashing("error" -> s"**$e.getMessage")
       }
       })
   }
 
-  def signup() = Action { implicit request =>
+  def signup(): Action[AnyContent] = Action { implicit request =>
     Ok(views.html.credentials.signup(signupData))
   }
 
-  def validateSignUp() = Action {implicit request =>
+  def validateSignUp(): Action[AnyContent] = Action { implicit request =>
     signupData.bindFromRequest.fold(
       formWithError => BadRequest(views.html.credentials.signup(formWithError)),
       sgd => {
@@ -65,5 +65,9 @@ class HomeController @Inject()(val cc: MessagesControllerComponents) extends Mes
           case Failure(e) => Redirect(routes.HomeController.signup()).flashing("error" -> s"**${e.getMessage}")
       }
   })
-}
+  }
+
+  def action(): Action[AnyContent] = Action { implicit request =>
+    Ok(views.html.Action.action())
+  }
 }
