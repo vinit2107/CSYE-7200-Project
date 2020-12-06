@@ -1,0 +1,18 @@
+@(stocklistForm: Form[StocklistForm])(implicit request: MessagesRequestHeader, flash: Flash)
+
+@main("Stockselect") {
+    @defining(play.core.PlayVersion.current) { version =>
+        <body class="landing-page" style="text-align: center">
+            <div id="stockselect">
+                @helper.form(action=routes.HomeController.addRemoveStocks()){
+                @helper.select(
+                    field = stocklistForm("Stockname"),
+                    helper.options("" -> "Choose a Stock", "A" -> "APPLE INC", "N" -> "NICK, INC"),
+                )
+                    <input type="submit" value="Select this stock">
+                    }
+            </div>
+        </body>
+
+    }
+}

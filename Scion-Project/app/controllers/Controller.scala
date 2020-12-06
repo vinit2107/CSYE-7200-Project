@@ -3,8 +3,11 @@ package controllers
 import javax.inject._
 import models.login.LoginHandler
 import models.DAO.UserTable
+import models.DAO.StocksTable
+import models.DAO.UserStockTable
 import play.api.data.Forms._
 import play.api.data._
+import play.api.data.format.Formats.doubleFormat
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -15,6 +18,9 @@ case class LoginForm(username: String, password: String)
 
 // Case class to validate sign-up form
 case class SignUpForm(name: String, email: String, city: String, username: String, password: String)
+
+// Case class to stock select form
+case class StocklistForm(username: String, stockname: String, currentprice: Double, highprice: Double, lowprice: Double)
 
 @Singleton
 class HomeController @Inject()(val cc: MessagesControllerComponents) extends MessagesAbstractController(cc) {
@@ -32,6 +38,14 @@ class HomeController @Inject()(val cc: MessagesControllerComponents) extends Mes
     "Password" -> nonEmptyText
   )(SignUpForm.apply)(SignUpForm.unapply))
 
+  val stocklistData = Form(mapping(
+    "Stockname" -> nonEmptyText,
+    "Shortname" -> nonEmptyText,
+    "Currentprice" -> of[Double],
+    "Highprice" -> of[Double],
+    "Lowprice" -> of[Double],
+  )(StocklistForm.apply)(StocklistForm.unapply))
+
   def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index())
   }
@@ -39,6 +53,11 @@ class HomeController @Inject()(val cc: MessagesControllerComponents) extends Mes
   def login(): Action[AnyContent] = Action { implicit request =>
     Ok(views.html.credentials.login(loginData))
   }
+
+  def addRemoveStocks():Action[AnyContent] = Action { implicit request =>
+    Ok(views.html.stockselect(stocklistData))
+  }
+
 
   def validateLogin(): Action[AnyContent] = Action.async { implicit request =>
     loginData.bindFromRequest.fold(
