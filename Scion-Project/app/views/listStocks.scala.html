@@ -1,0 +1,21 @@
+@(allStocks: Seq[String], selectedStocks: Seq[String])(implicit flash: Flash)
+
+@main("Login") {
+@defining(play.core.PlayVersion.current) { version =>
+
+    <body class="landing-page">
+        <div>
+            <select multiple>
+                @for(stock <- allStocks){
+                @if(selectedStocks.contains(stock)){
+                    <option value=@stock selected>@stock</option>
+                }else{
+                    <option value=@stock>@stock</option>
+                }
+                }
+                <input type="submit" value="Submit" onclick="window.location.href='@routes.HomeController.addRemoveStocks()'"/>
+            </select>
+        </div>
+    </body>
+    }
+}
