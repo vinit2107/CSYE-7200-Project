@@ -2,15 +2,15 @@ package models.DAO
 
 import scala.concurrent.Future
 
-case class UserStock(username: String, stockname: String)
+case class UserStock(username: String, stocks: String)
 
 trait UserStockTable {
   //  this: DbConfiguration =>
   import DbConfiguration.config.profile.api._
 
-  class UserStocks(tag: Tag) extends Table[UserStock](tag, "USERSTOCK") {
+  class UserStocks(tag: Tag) extends Table[UserStock](tag, "USERSTOCKS") {
     def username = column[String]("USERNAME", O.Length(24), O.PrimaryKey)
-    def stockname = column[String]("STOCKNAME", O.Length(24))
+    def stockname = column[String]("STOCKS", O.Length(24))
 
     def * = (username, stockname) <> (UserStock.tupled, UserStock.unapply)
   }
@@ -23,12 +23,7 @@ trait UserStockTable {
   }
 
   /*Function to insert record in User table*/
-  def insert_user(userstock: UserStock): Future[Int] = {
+  def insert_stock_selection(userstock: UserStock): Future[Int] = {
     DbConfiguration.config.db.run(userstocks += userstock)
   }
-
-  /*Function to connect User table and Stock table*/
-//  def connect_table(userstock: UserStock, usertable: UserTable, stocktable: StockTable): Future[Int] = {
-//    DbConfiguration.config.db.run()
-//  }
 }

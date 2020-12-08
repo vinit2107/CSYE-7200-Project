@@ -2,7 +2,7 @@ package models.DAO
 
 import scala.concurrent.Future
 
-case class Stock(stockname: String, shortname: String, currentprice: Double, highprice: Double, lowprice: Double)
+case class Stock(stockname: String, shortname: String)
 
 trait StocksTable {
   //  this: DbConfiguration =>
@@ -11,11 +11,8 @@ trait StocksTable {
   class Stocks(tag: Tag) extends Table[Stock](tag, "STOCKS") {
     def stockname = column[String]("STOCKNAME", O.Length(24), O.PrimaryKey)
     def shortname = column[String]("SHORTNAME",O.Length(24))
-    def currentprice = column[Double]("HIGHPRICE")
-    def highprice = column[Double]("HIGHPRICE")
-    def lowprice = column[Double]("LOWPRICE")
 
-    def * = (stockname, shortname, currentprice, highprice, lowprice) <> (Stock.tupled, Stock.unapply)
+    def * = (stockname, shortname) <> (Stock.tupled, Stock.unapply)
   }
 
   val stocks = TableQuery[Stocks]

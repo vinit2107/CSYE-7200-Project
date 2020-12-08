@@ -1,13 +1,11 @@
 package controllers
 
 import javax.inject._
+import models.DAO.{StocksTable, UserStockTable, UserTable}
+import models.StockSelection.{ListStocks, StockSelectionHandler}
 import models.login.LoginHandler
-import models.DAO.UserTable
-import models.DAO.StocksTable
-import models.DAO.UserStockTable
 import play.api.data.Forms._
 import play.api.data._
-import play.api.data.format.Formats.doubleFormat
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -20,7 +18,7 @@ case class LoginForm(username: String, password: String)
 case class SignUpForm(name: String, email: String, city: String, username: String, password: String)
 
 // Case class to stock select form
-case class StocklistForm(username: String, stockname: String, currentprice: Double, highprice: Double, lowprice: Double)
+case class StocklistForm(username: String, stockname: String)
 
 @Singleton
 class HomeController @Inject()(val cc: MessagesControllerComponents) extends MessagesAbstractController(cc) {
@@ -40,11 +38,8 @@ class HomeController @Inject()(val cc: MessagesControllerComponents) extends Mes
 
   val stocklistData = Form(mapping(
     "Stockname" -> nonEmptyText,
-    "Shortname" -> nonEmptyText,
-    "Currentprice" -> of[Double],
-    "Highprice" -> of[Double],
-    "Lowprice" -> of[Double],
-  )(StocklistForm.apply)(StocklistForm.unapply))
+    "Shortname" ->  nonEmptyText)
+  (StocklistForm.apply)(StocklistForm.unapply))
 
   def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index())
@@ -58,14 +53,13 @@ class HomeController @Inject()(val cc: MessagesControllerComponents) extends Mes
     Ok(views.html.stockselect(stocklistData))
   }
 
-
   def validateLogin(): Action[AnyContent] = Action.async { implicit request =>
     loginData.bindFromRequest.fold(
       formWithError => Future(BadRequest(views.html.credentials.login(formWithError))),
       ld => {
          val handler = new LoginHandler() with UserTable
          (handler.validateUser(ld.username, ld.password)).map(b => b match {
-           case true => Redirect(routes.HomeController.action())
+           case true => Redirect(routes.HomeController.action()).withSession("username" -> ld.username)
            case false => Redirect(routes.HomeController.login()).flashing("error" -> s"**Username or password is incorrect")
       })
       })
@@ -89,5 +83,16 @@ class HomeController @Inject()(val cc: MessagesControllerComponents) extends Mes
 
   def action(): Action[AnyContent] = Action { implicit request =>
     Ok(views.html.Action.action())
+  }
+
+  def listStocks(): Action[AnyContent] = Action.async { implicit request =>
+    val stocksList = new ListStocks() with StocksTable
+    val allStocks = stocksList.listAllStocks()
+    val stocksSelection = new StockSelectionHandler() with UserStockTable
+    val selectedStocks = stocksSelection.fetch_current_stocks(request.session.data.getOrElse("username", throw new Exception("Login Again!")))
+    for {
+      as <- allStocks
+      ss <- selectedStocks
+    } yield Ok(views.html.listStocks(as, ss))
   }
 }
