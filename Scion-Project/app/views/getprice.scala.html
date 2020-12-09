@@ -1,0 +1,24 @@
+@(ss: Seq[String], )(implicit request: MessagesRequestHeader, flash: Flash)
+
+@main("Login") {
+@defining(play.core.PlayVersion.current) { version =>
+
+<body class="landing-page">
+    <div style="text-align: left">
+        <table style="width:100%">
+            @for(stock <- ss, price <- , time <-)
+            <tr>
+                <th>Stock</th>
+                <th>Price</th>
+                <th>Time</th>
+            </tr>
+            <tr>
+                <td>@ss</td>
+                <td>@price</td>
+                <td>@time</td>
+            </tr>
+        </table>
+    </div>
+</body>
+}
+
