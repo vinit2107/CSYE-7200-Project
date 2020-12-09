@@ -19,3 +19,8 @@ libraryDependencies += "mysql" % "mysql-connector-java" % "8.0.15"
 
 // Adds additional packages into conf/routes
 // play.sbt.routes.RoutesKeys.routesImport += "com.example.binders._"
+
+val AkkaVersion = "2.6.6"
+libraryDependencies += "com.typesafe.akka" %% "akka-actor-typed" % AkkaVersion
+libraryDependencies += "com.amazonaws" % "aws-java-sdk" % "1.11.914"
+

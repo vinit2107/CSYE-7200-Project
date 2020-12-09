@@ -1,6 +1,6 @@
 package controllers
 
-import akka.util.Helpers.Requiring
+import ClusterConfiguration.ActorSystemCC
 import javax.inject._
 import models.DAO.{StocksTable, UserStockTable, UserTable}
 import models.StockSelection.{ListStocks, StockSelectionHandler}
@@ -8,6 +8,7 @@ import models.login.LoginHandler
 import play.api.data.Forms._
 import play.api.data._
 import play.api.mvc._
+import com.typesafe.config.Config
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -25,7 +26,7 @@ case class StocklistForm(username: String, stockname: String)
 case class SelectedStocks(stocklist: String)
 
 @Singleton
-class HomeController @Inject()(val cc: MessagesControllerComponents) extends MessagesAbstractController(cc) {
+class HomeController @Inject()(val cc: MessagesControllerComponents, config: Config) extends MessagesAbstractController(cc) {
 
   val loginData = Form(mapping(
     "Username" -> nonEmptyText,
@@ -138,5 +139,23 @@ class HomeController @Inject()(val cc: MessagesControllerComponents) extends Mes
         stockHandler.delete_new_stocks(request.session.get("username").get, success.stocklist)
         Redirect(routes.HomeController.listCommonStocks()).withSession("username" -> request.session.data.get("username").get)
       })
+  }
+
+  def listCommonStocksTransformation(): Action[AnyContent] = Action.async { implicit request =>
+    val stocksSelection = new StockSelectionHandler() with UserStockTable
+    val selectedStocks = stocksSelection.fetch_current_stocks(request.session.get("username").get)
+    for {
+      ss <- selectedStocks
+    } yield Ok(views.html.Transformation.transformation(selectedstocks, ss)).withSession("username" -> request.session.data.get("username").get)
+  }
+
+  def transformData(): Action[AnyContent] = Action { implicit request =>
+    selectedstocks.bindFromRequest.fold(
+      fail => Redirect(routes.HomeController.listCommonStocksTransformation()).withSession("username" -> request.session.data.get("username").get),
+      success => {
+        ActorSystemCC.createActorSystem(success.stocklist)(config)
+        Ok("Inside transform Data")
+      }
+    )
   }
 }

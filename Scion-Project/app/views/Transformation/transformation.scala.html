@@ -1,0 +1,17 @@
+@(selectedstocks: Form[SelectedStocks], stocks: Seq[String])(implicit request: MessagesRequestHeader, flash: Flash)
+
+@main("Login") {
+@defining(play.core.PlayVersion.current) { version =>
+        <body class="landing-page">
+            @helper.form(action=routes.HomeController.transformData()){
+                @helper.CSRF.formField
+            <select name="selectedstocks">
+                @for(stock <- stocks){
+                    <option value=@stock>@stock</option>
+                }
+            </select>
+                <input type="submit" value="Submit">
+        }
+        </body>
+    }
+}
