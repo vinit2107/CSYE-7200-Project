@@ -1,0 +1,23 @@
+@(selectedstocks: Form[SelectedStocks], allStocks: Seq[String], selectedStocks: Seq[String])(implicit request: MessagesRequestHeader, flash: Flash)
+
+@main("Login") {
+@defining(play.core.PlayVersion.current) { version =>
+
+<body class="landing-page">
+<div style="text-align: left">
+    @helper.form(action=routes.HomeController.removeStocks()){
+    @helper.CSRF.formField
+    <select name="selectedstocks">
+        @for(stock <- allStocks){
+        @if(selectedStocks.contains(stock)){
+        <option value=@stock>@stock</option>
+        }
+        }
+        <input id="button1" type="submit" value="Submit"/>
+        }
+        <input id="button2" type="submit" value="Back" onclick="window.location.href='@routes.HomeController.action()'"/>
+    </select>
+</div>
+</body>
+}
+}

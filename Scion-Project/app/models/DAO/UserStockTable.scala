@@ -9,7 +9,7 @@ trait UserStockTable {
   import DbConfiguration.config.profile.api._
 
   class UserStocks(tag: Tag) extends Table[UserStock](tag, "USERSTOCKS") {
-    def username = column[String]("USERNAME", O.Length(24), O.PrimaryKey)
+    def username = column[String]("USERNAME", O.Length(24))
     def stockname = column[String]("STOCKS", O.Length(24))
 
     def * = (username, stockname) <> (UserStock.tupled, UserStock.unapply)
@@ -25,5 +25,12 @@ trait UserStockTable {
   /*Function to insert record in User table*/
   def insert_stock_selection(userstock: UserStock): Future[Int] = {
     DbConfiguration.config.db.run(userstocks += userstock)
+  }
+
+  /*Function to remove record in User table*/
+  def remove_stock_selection(userstock: UserStock): Future[Int] = {
+    val query = userstocks.filter(_.username === userstock.username).filter(_.stockname === userstock.stocks)
+    val action = query.delete
+    DbConfiguration.config.db.run(action)
   }
 }

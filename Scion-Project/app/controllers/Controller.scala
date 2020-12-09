@@ -1,5 +1,6 @@
 package controllers
 
+import akka.util.Helpers.Requiring
 import javax.inject._
 import models.DAO.{StocksTable, UserStockTable, UserTable}
 import models.StockSelection.{ListStocks, StockSelectionHandler}
@@ -19,6 +20,9 @@ case class SignUpForm(name: String, email: String, city: String, username: Strin
 
 // Case class to stock select form
 case class StocklistForm(username: String, stockname: String)
+
+// Case class to select stock
+case class SelectedStocks(stocklist: String)
 
 @Singleton
 class HomeController @Inject()(val cc: MessagesControllerComponents) extends MessagesAbstractController(cc) {
@@ -40,6 +44,10 @@ class HomeController @Inject()(val cc: MessagesControllerComponents) extends Mes
     "Stockname" -> nonEmptyText,
     "Shortname" ->  nonEmptyText)
   (StocklistForm.apply)(StocklistForm.unapply))
+
+  val selectedstocks = Form(mapping(
+    "selectedstocks" -> text
+  )(SelectedStocks.apply)(SelectedStocks.unapply))
 
   def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index())
@@ -82,17 +90,53 @@ class HomeController @Inject()(val cc: MessagesControllerComponents) extends Mes
   }
 
   def action(): Action[AnyContent] = Action { implicit request =>
-    Ok(views.html.Action.action())
+    Ok(views.html.Action.action()).withSession("username" -> request.session.data.get("username").get)
   }
 
   def listStocks(): Action[AnyContent] = Action.async { implicit request =>
     val stocksList = new ListStocks() with StocksTable
     val allStocks = stocksList.listAllStocks()
     val stocksSelection = new StockSelectionHandler() with UserStockTable
-    val selectedStocks = stocksSelection.fetch_current_stocks(request.session.data.getOrElse("username", throw new Exception("Login Again!")))
+    val selectedStocks = stocksSelection.fetch_current_stocks(request.session.get("username").get)
     for {
       as <- allStocks
       ss <- selectedStocks
-    } yield Ok(views.html.listStocks(as, ss))
+    } yield Ok(views.html.listStocks(selectedstocks, as, ss)).withSession("username" -> request.session.data.get("username").get)
+  }
+
+  def saveStocks(): Action[AnyContent] = Action { implicit request =>
+    selectedstocks.bindFromRequest.fold(
+      fail => {
+        Redirect(routes.HomeController.listStocks()).withSession("username" -> request.session.data.get("username").get)
+      },
+      success => {
+        val stockHandler = new StockSelectionHandler() with UserStockTable
+        stockHandler.store_new_stocks(request.session.get("username").get, success.stocklist)
+        Redirect(routes.HomeController.listStocks()).withSession("username" -> request.session.data.get("username").get)
+      }
+    )
+  }
+
+  def listCommonStocks(): Action[AnyContent] = Action.async { implicit request =>
+    val stocksList = new ListStocks() with StocksTable
+    val allStocks = stocksList.listAllStocks()
+    val stocksSelection = new StockSelectionHandler() with UserStockTable
+    val selectedStocks = stocksSelection.fetch_current_stocks(request.session.get("username").get)
+    for {
+      as <- allStocks
+      ss <- selectedStocks
+    } yield Ok(views.html.removeStocks(selectedstocks, as, ss)).withSession("username" -> request.session.data.get("username").get)
+  }
+
+  def removeStocks(): Action[AnyContent] = Action { implicit request =>
+    selectedstocks.bindFromRequest.fold(
+      fail => {
+        Redirect(routes.HomeController.listCommonStocks()).withSession("username" -> request.session.data.get("username").get)
+      },
+      success => {
+        val stockHandler = new StockSelectionHandler() with UserStockTable
+        stockHandler.delete_new_stocks(request.session.get("username").get, success.stocklist)
+        Redirect(routes.HomeController.listCommonStocks()).withSession("username" -> request.session.data.get("username").get)
+      })
   }
 }
