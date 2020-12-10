@@ -4,7 +4,7 @@
 @defining(play.core.PlayVersion.current) { version =>
 
 <body class="landing-page">
-<div style="text-align: left">
+<div id="removebutton">
     @helper.form(action=routes.HomeController.removeStocks()){
     @helper.CSRF.formField
     <select name="selectedstocks">
@@ -13,9 +13,9 @@
         <option value=@stock>@stock</option>
         }
         }
-        <input id="button1" type="submit" value="Submit"/>
+        <input id="removebutton1" type="submit" value="Submit"/>
         }
-        <input id="button2" type="submit" value="Back" onclick="window.location.href='@routes.HomeController.action()'"/>
+        <input id="removebutton2" type="submit" value="Back" onclick="window.location.href='@routes.HomeController.action()'"/>
     </select>
 </div>
 </body>

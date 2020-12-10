@@ -158,4 +158,11 @@ class HomeController @Inject()(val cc: MessagesControllerComponents, config: Con
       }
     )
   }
+
+  def displayselectedStocks(): Action[AnyContent] = Action.async { implicit request =>
+    val stocksSelection = new StockSelectionHandler() with UserStockTable
+    val selectedStocks = stocksSelection.fetch_current_stocks(request.session.data.get("username").get)
+    for(ss <- selectedStocks)
+      yield Ok(views.html.currentprices(ss)).withSession("username" -> request.session.data.get("username").get)
+  }
 }

@@ -3,6 +3,7 @@
 @main("Login") {
 @defining(play.core.PlayVersion.current) { version =>
         <body class="landing-page">
+        <div id="transformationbutton">
             @helper.form(action=routes.HomeController.transformData()){
                 @helper.CSRF.formField
             <select name="selectedstocks">
@@ -12,6 +13,7 @@
             </select>
                 <input type="submit" value="Submit">
         }
+        </div>
         </body>
     }
 }

@@ -4,14 +4,14 @@
 @defining(play.core.PlayVersion.current) { version =>
 
 <body class="landing-page">
-<div style="text-align: left">
+<div id="getbutton">
     @helper.CSRF.formField
     <select name="selectedstocks">
         @for(stock <- ss){
         <option value=@stock>@stock</option>
         }
         }
-        <input id="button1" type="submit" value="Get"/>
+        <input id="currentpricesbutton1" type="submit" value="Get Current Prices"/>
 
     </select>
 </div>

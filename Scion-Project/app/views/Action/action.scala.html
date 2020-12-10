@@ -2,11 +2,12 @@
 
 @main("Action") {
     @defining(play.core.PlayVersion.current) { version =>
-        <body class="landing-page" style="text-align: center">
-            <div style="text-align: left">
-                <input id="button1" type="submit" value="Add Ticks" onclick="window.location.href='@routes.HomeController.listStocks()'"/>
-                <input id="button2" type="submit" value="Remove Ticks" onclick="window.location.href='@routes.HomeController.listCommonStocks()'"/>
-                <input id="button3" type="submit" value="Historical Data Transformation" onclick="window.location.href='@routes.HomeController.listCommonStocksTransformation()'"/>
+        <body class="landing-page">
+            <div id="actionbuttons">
+                <p><input id="actionbutton1" type="submit" value="Add Ticks" onclick="window.location.href='@routes.HomeController.listStocks()'"/></p>
+                <p><input id="actionbutton2" type="submit" value="Remove Ticks" onclick="window.location.href='@routes.HomeController.listCommonStocks()'"/></p>
+                <p><input id="actionbutton3" type="submit" value="Historical Data Transformation" onclick="window.location.href='@routes.HomeController.listCommonStocksTransformation()'"/></p>
+                <p><input id="actionbutton4" type="submit" value="Get Current Prices" onclick="window.location.href='@routes.HomeController.displayselectedStocks()'"></p>
             </div>
         </body>
     }

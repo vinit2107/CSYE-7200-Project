@@ -79,6 +79,37 @@ body{
     right: 10%;
 }
 
-/*#button1 , #button2 {
-display:inline-block;
-}*/
+#actionbuttons {
+    position: fixed;
+    bottom: 30%;
+    right: 10%;
+    width:18em
+}
+
+#addbutton {
+    position: fixed;
+    bottom: 35%;
+    right: 10%;
+    width:18em
+}
+
+#removebutton {
+    position: fixed;
+    bottom: 35%;
+    right: 10%;
+    width:18em
+}
+
+#transformationbutton {
+    position: fixed;
+    bottom: 35%;
+    right: 10%;
+    width:18em
+}
+
+#getbutton {
+    position: fixed;
+    bottom: 35%;
+    right: 10%;
+    width:18em
+}
