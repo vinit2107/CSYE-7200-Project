@@ -154,7 +154,7 @@ class HomeController @Inject()(val cc: MessagesControllerComponents, config: Con
       fail => Redirect(routes.HomeController.listCommonStocksTransformation()).withSession("username" -> request.session.data.get("username").get),
       success => {
         ActorSystemCC.createActorSystem(success.stocklist)(config)
-        Ok("Inside transform Data")
+        Ok(views.html.Transformation.transformationOutput()).withSession("username" -> request.session.data.get("username").get)
       }
     )
   }
