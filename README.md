@@ -13,7 +13,7 @@ The two modules, UI and data transformation module are in these folder resp.:
 
 ### Steps to Reproduce
 
-1. **UI**
+**I. UI**
 
 In order to reproduce the UI, clone the repository and configure the [application.conf](https://github.com/vinit2107/CSYE-7200-Project-Grp-5/blob/main/Scion-Project/conf/application.conf) configuration file. Provide the jdbc connection URL for a MySQL database. This MyQSL database should have the following tables, 
 
@@ -31,16 +31,17 @@ In order to reproduce the UI, clone the repository and configure the [applicatio
 
 The user also needs to configure AWS related credentials. The application requires the user to configure the credentials using the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html). The application also requires the additional jars, Data-Transformer.jar, [configuration.properties](https://github.com/vinit2107/CSYE-7200-Project-Grp-5/blob/main/Spark-Job/src/main/resources/configuration.properties) to be uploaded onto S3 and provide its location in the application.conf. The properties and the reason for defining the requirements are defined below:
 
-1. *emr.name* - The string value assigned against this property will be used as the name of the EMR instance.
-2. *emr.logURI* - This is used to defined the location of logs from the EMR cluster. This has to be a location on S3.
-3. *emr.ec2SubnetId* - The value should be the subnet you want the cluster to be using. 
-4. *emr.ec2KeyName* - The application requires the host to have KeyPairs already assigned. You can configure this using the IAM in AWS. This is used when you need to login to the cluster to check yarn logs.
-5. *emr.instanceCount* -This value determines the number to instances that the cluster will have. This value should be a positive value greater than 0. 
-6. *emr.jarsPath* - This is used to define any additional jars the data transformer will need to be passed to the driver while executing the spark job. The application has been tested using mysql-connector-java-8.0.20.jar and redshift-jdbc42-2.0.0.0.jar jars. 
-7. *emr.filesPath* - This should be the path for configuration.properties on S3.
-8. *emr.mainJarPath* - This should be path for Data-Transformer.jar on S3.
+1. **emr.name** - The string value assigned against this property will be used as the name of the EMR instance.
+2. **emr.logURI** - This is used to defined the location of logs from the EMR cluster. This has to be a location on S3.
+3. **emr.ec2SubnetId** - The value should be the subnet you want the cluster to be using. 
+4. **emr.ec2KeyName** - The application requires the host to have KeyPairs already assigned. You can configure this using the IAM in AWS. This is used when you need to login to the cluster to check yarn logs.
+5. **emr.instanceCount** -This value determines the number to instances that the cluster will have. This value should be a positive value greater than 0. 
+6. **emr.jarsPath** - This is used to define any additional jars the data transformer will need to be passed to the driver while executing the spark job. The application has been tested using mysql-connector-java-8.0.20.jar and redshift-jdbc42-2.0.0.0.jar jars. 
+7. **emr.filesPath** - This should be the path for configuration.properties on S3.
+8. **emr.mainJarPath** - This should be path for Data-Transformer.jar on S3.
 
-2. **Spark Job - Data Transformation Module**
+
+**II. Spark Job - Data Transformation Module**
 
 This module gives user the freedom to choose the destination and input data from any one of S3, Redshift and MySQL servers. For functioning of the module, generation of two tables in MySQL is required. 
 
