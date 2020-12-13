@@ -82,4 +82,35 @@ class ControllerTestSpec extends PlaySpec {
       bodyText must include("Back")
     }
   }
+
+  "application listCommonStocksTransformation" must{
+    "give back expected page" in {
+      val controller = new HomeController(Helpers.stubMessagesControllerComponents(),
+        config = Configuration(ConfigFactory.load()).underlying)
+      val result = controller.listCommonStocksTransformation().apply(CSRFTokenHelper.addCSRFToken(FakeRequest().withSession("username" -> "root")))
+      val bodyText = contentAsString(result)
+      bodyText must include("transformationbutton")
+    }
+  }
+
+  "application transformData" must{
+    "give back expected page" in {
+      val controller = new HomeController(Helpers.stubMessagesControllerComponents(),
+        config = Configuration(ConfigFactory.load()).underlying)
+      val result = controller.transformData().apply(CSRFTokenHelper.addCSRFToken(FakeRequest().withSession("username" -> "root")))
+      val bodyText = contentAsString(result)
+      bodyText must include("Transformation in progress")
+      bodyText must include("Please check the JOB_HISTORY table and AWS CMS to check the progress.")
+    }
+  }
+
+  "application displayselectedStocks" must{
+    "give back expected page" in {
+      val controller = new HomeController(Helpers.stubMessagesControllerComponents(),
+        config = Configuration(ConfigFactory.load()).underlying)
+      val result = controller.displayselectedStocks().apply(CSRFTokenHelper.addCSRFToken(FakeRequest().withSession("username" -> "root")))
+      val bodyText = contentAsString(result)
+      bodyText must include("Get Current Prices")
+    }
+  }
 }
