@@ -23,6 +23,23 @@ class FunctionTestSpec extends PlaySpec with GuiceOneServerPerSuite with OneBrow
 //         findAll(cssSelector("p")).toList.map(_.text) mustBe List("Add Ticks","Remove Ticks","Historical Data Transformation","Get Current Prices")
 //       }
      }
+
+     "sign up and access functions" in{
+       go to s"http://localhost:9000/signup?"
+
+       click on id("Name")
+       textField(id("Name")).value = "XUEWENXU"
+       click on id("Email")
+       textField(id("Email")).value = "xuewenxu@123.com"
+       click on id("City")
+       textField(id("City")).value = "Boston"
+       click on id("Username")
+       textField(id("Username")).value = "BOBYXU"
+       click on id("Password")
+       textField(id("Password")).value = "123"
+       submit()
+
+     }
    }
 
 }
