@@ -24,3 +24,5 @@ val AkkaVersion = "2.6.6"
 libraryDependencies += "com.typesafe.akka" %% "akka-actor-typed" % AkkaVersion
 libraryDependencies += "com.amazonaws" % "aws-java-sdk" % "1.11.914"
 
+// Dependency for encryption
+libraryDependencies += "org.mindrot" % "jbcrypt" % "0.3m"
