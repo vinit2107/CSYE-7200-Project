@@ -1,6 +1,7 @@
 package models.login
 
 import models.DAO.{User, UserTable}
+import org.mindrot.jbcrypt.BCrypt
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -12,7 +13,7 @@ class LoginHandler {
     filter_username(username).map(s => s.length == 1).map(b => b match {
       case true => false
       case false => {
-        val user = User(username, password, name, email, city)
+        val user = User(username, encryptPassword(password), name, email, city)
         insert_user(user)
         true
       }
@@ -21,8 +22,16 @@ class LoginHandler {
 
   def validateUser(username: String, password: String): Future[Boolean] = {
     filter_username(username).map(s => s.headOption match {
-      case Some(u) => u.password == password
+      case Some(u) => checkPassword(password, u.password)
       case None => false
     })
     }
+
+  def encryptPassword(password: String): String = {
+    BCrypt.hashpw(password, BCrypt.gensalt())
+  }
+
+  def checkPassword(plainText: String, hashed: String): Boolean = {
+    BCrypt.checkpw(plainText, hashed)
+  }
 }

@@ -10,7 +10,7 @@ trait UserTable {
 
   class Users(tag: Tag) extends Table[User](tag, "USERS") {
     def username = column[String]("USERNAME", O.Length(24), O.PrimaryKey)
-    def password = column[String]("PASSWORD", O.Length(24))
+    def password = column[String]("PASSWORD")
     def name = column[String]("NAME")
     def email = column[String]("EMAIL", O.Length(50))
     def city = column[String]("CITY")
