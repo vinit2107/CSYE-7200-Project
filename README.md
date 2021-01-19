@@ -21,7 +21,7 @@ In order to reproduce the UI, clone the repository and configure the [applicatio
 
 1. **USERS** - This table stores the information user fills up while signing up. 
 
-*CREATE TABLE USERS (USERNAME VARCHAR(24), PASSWORD VARCHAR(24), NAME TEXT, EMAIL VARCHAR(50), CITY TEXT);*
+*CREATE TABLE USERS (USERNAME VARCHAR(24), PASSWORD TEXT, NAME TEXT, EMAIL VARCHAR(50), CITY TEXT);*
 
 2. **USERSTOCKS** - This table stores the username and stocks the user has selected to be added to the portfolio.
 
